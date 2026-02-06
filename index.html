@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Quản lý Sinh viên</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    margin: 0;
+    padding: 30px;
+}
+
+.container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+input {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+input:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 4px rgba(78,115,223,0.4);
+}
+
+button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-add { background: #1cc88a; color: white; }
+.btn-update { background: #f6c23e; }
+.btn-edit { background: #36b9cc; color: white; }
+.btn-delete { background: #e74a3b; color: white; }
+
+button:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+th {
+    background: #4e73df;
+    color: white;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+    background: #f8f9fc;
+}
+
+.actions button {
+    margin: 2px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2> Nhập thông tin sinh viên</h2>
+
+<div class="form-grid">
+    <input id="id" placeholder="Mã SV">
+    <input id="name" placeholder="Họ tên">
+    <input id="dob" type="date">
+    <input id="class" placeholder="Lớp">
+    <input id="gpa" placeholder="GPA">
+</div>
+
+<button class="btn-add" onclick="addStudent()">Thêm sinh viên</button>
+<button class="btn-update" onclick="updateStudent()">Cập nhật</button>
+
+<h2> Danh sách sinh viên</h2>
+
+<table>
+<thead>
+<tr>
+    <th>Mã SV</th>
+    <th>Họ tên</th>
+    <th>Ngày sinh</th>
+    <th>Lớp</th>
+    <th>GPA</th>
+    <th>Hành động</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+
+</div>
+
+<script>
+
+class Student {
+    constructor(id, name, dob, className, gpa) {
+        this.id = id;
+        this.name = name;
+        this.dob = dob;
+        this.className = className;
+        this.gpa = gpa;
+    }
+
+    update(name, dob, className, gpa) {
+        this.name = name;
+        this.dob = dob;
+        this.className = className;
+        this.gpa = gpa;
+    }
+}
+
+let students = [];
+let selectedIndex = -1;
+
+function getInput() {
+    return {
+        id: id.value,
+        name: name.value,
+        dob: dob.value,
+        className: document.getElementById("class").value,
+        gpa: gpa.value
+    };
+}
+
+function addStudent() {
+    let d = getInput();
+    if (!d.id) return alert("Nhập mã sinh viên");
+
+    students.push(new Student(d.id, d.name, d.dob, d.className, d.gpa));
+    render();
+    clearForm();
+}
+
+function render() {
+    let body = document.getElementById("tableBody");
+    body.innerHTML = "";
+
+    students.forEach((s, i) => {
+        body.innerHTML += `
+        <tr>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${s.dob}</td>
+            <td>${s.className}</td>
+            <td>${s.gpa}</td>
+            <td class="actions">
+                <button class="btn-edit" onclick="selectStudent(${i})">Sửa</button>
+                <button class="btn-delete" onclick="deleteStudent(${i})">Xóa</button>
+            </td>
+        </tr>`;
+    });
+}
+
+function selectStudent(i) {
+    let s = students[i];
+    selectedIndex = i;
+    id.value = s.id;
+    name.value = s.name;
+    dob.value = s.dob;
+    document.getElementById("class").value = s.className;
+    gpa.value = s.gpa;
+}
+
+function updateStudent() {
+    if (selectedIndex === -1)
+        return alert("Chọn sinh viên để cập nhật");
+
+    let d = getInput();
+    students[selectedIndex].update(
+        d.name, d.dob, d.className, d.gpa
+    );
+
+    render();
+    clearForm();
+    selectedIndex = -1;
+}
+
+function deleteStudent(i) {
+    if (!confirm("Xóa sinh viên này?")) return;
+    students.splice(i, 1);
+    render();
+    clearForm();
+    selectedIndex = -1;
+}
+
+function clearForm() {
+    document.querySelectorAll("input").forEach(x => x.value = "");
+}
+
+</script>
+
+</body>
+</html>
