@@ -152,11 +152,11 @@ let selectedIndex = -1;
 
 function getInput() {
     return {
-        id: id.value,
-        name: name.value,
-        dob: dob.value,
+        id: document.getElementById("id").value,
+        name: document.getElementById("name").value,
+        dob: document.getElementById("dob").value,
         className: document.getElementById("class").value,
-        gpa: gpa.value
+        gpa: document.getElementById("gpa").value
     };
 }
 
